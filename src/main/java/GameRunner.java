@@ -70,7 +70,7 @@ public class GameRunner {
         }
         else{
             System.out.println("Dealt at: " + bsi.poundsValueStringInator(dealtAmount));
-            System.out.println("Banker would have offered: " + bsi.poundsValueStringInator(offer));
+            System.out.println("Banker would've offered: " + bsi.poundsValueStringInator(offer));
             System.out.println("Moving on....");
         }
     }
