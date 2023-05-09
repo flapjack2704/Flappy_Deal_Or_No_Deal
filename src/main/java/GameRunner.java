@@ -1,5 +1,5 @@
 //import java.util.ArrayList;
-import java.util.Scanner;
+import java.util.*;
 
 public class GameRunner {
     private BoxSetInator bsi = new BoxSetInator();
@@ -8,10 +8,16 @@ public class GameRunner {
     private Float dealtAmount = 0f;  // Blir ikke null hvis avtalen har blitt tatt
     private int roundsPlayed = 0;  // 5 runder
     private String playerName= "";
+    private float amountWon = 0f;
+    private LinkedHashMap<String, Float> highScoresMap = new LinkedHashMap<>();
     //private ArrayList<Float> offerHistory = new ArrayList<>();  // Skal brukes senere i produksjon, bare vent ^_^
 
 
     public void run(){
+        highScoresMap = fio.readHighScoreFileToMap();
+        System.out.println(highScoresMap);
+
+
         System.out.println("Welcome to Flappy Deal Or No Deal\n");
         setPlayerName();
         System.out.println("Hello " + playerName + "!");
@@ -26,10 +32,12 @@ public class GameRunner {
             bsi.printAllBoxIDsLeft();
             bsi.printAllAmountsLeft();
 
-            bankerWankerOffer();
+            bankerOffer();
         }
 
         finalRound();  // "Endre boks? Eller nei?"
+        addNewScoreToMap();
+        fio.writeMapToHighScoreFile(highScoresMap);
 
         closeScanner();
     }
@@ -46,7 +54,7 @@ public class GameRunner {
         roundsPlayed++;
     }
 
-    public void bankerWankerOffer(){
+    public void bankerOffer(){
         float offer = 0;
         float kValue = (float) (0.2 + (0.11 * roundsPlayed));  // 0.31 -> 0.75
         //System.out.println("test K: " + kValue);
@@ -107,6 +115,7 @@ public class GameRunner {
 
         if(dealtAmount == 0) {
             System.out.println("You took home " + bsi.poundsValueStringInator(amount));
+            amountWon = amount;
         }
         else{
             if(amount > dealtAmount){
@@ -115,6 +124,7 @@ public class GameRunner {
             else{
                 System.out.println("Congrats, you beat the banker and took home " + bsi.poundsValueStringInator(dealtAmount));
             }
+            amountWon = dealtAmount;
         }
     }
 
@@ -132,6 +142,45 @@ public class GameRunner {
             }
         }
     }
+
+    public void printHighScores(){
+
+    }
+
+    public void addNewScoreToMap(){
+
+        if(highScoresMap.size() == 10){
+            Set<Map.Entry<String, Float>> entries = highScoresMap.entrySet();
+            Iterator<Map.Entry<String, Float>> iterator = entries.iterator();
+            Map.Entry<String, Float> entry, last = null;
+
+            while(iterator.hasNext()){
+                entry = iterator.next();
+                last = entry;
+            }
+            if(amountWon > last.getValue()){
+                System.out.println("Congrats " + playerName + " , you made the leaderboard!");
+                highScoresMap.remove(last.getKey());
+                highScoresMap.put(playerName, amountWon);
+            }
+            else{
+                System.out.println("You didn't make it onto the leaderboard");
+            }
+        }
+        else{
+            System.out.println("You made the leaderboard, but there was space free anyway...");
+            highScoresMap.put(playerName, amountWon);
+        }
+        highScoresMap = sortHighScoreMap();
+    }
+
+    public LinkedHashMap<String, Float> sortHighScoreMap(){
+        LinkedHashMap<String, Float> outMap = new LinkedHashMap<>();
+        highScoresMap.entrySet().stream().sorted(Map.Entry.comparingByValue(Comparator.reverseOrder())).
+                forEach(entry -> outMap.put(entry.getKey(), entry.getValue()));
+        return outMap;
+    }
+
 
     public int inputInteger(String msg){
         int input = 0;
