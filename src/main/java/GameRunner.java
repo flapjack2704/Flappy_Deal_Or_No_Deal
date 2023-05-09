@@ -1,15 +1,20 @@
-import java.util.ArrayList;
+//import java.util.ArrayList;
 import java.util.Scanner;
 
 public class GameRunner {
     private BoxSetInator bsi = new BoxSetInator();
+    private FileIOInator fio = new FileIOInator();
     private Scanner sc = new Scanner(System.in);
     private Float dealtAmount = 0f;  // Blir ikke null hvis avtalen har blitt tatt
     private int roundsPlayed = 0;  // 5 runder
-    private ArrayList<Float> offerHistory = new ArrayList<>();
+    private String playerName= "";
+    //private ArrayList<Float> offerHistory = new ArrayList<>();  // Skal brukes senere i produksjon, bare vent ^_^
 
 
     public void run(){
+        System.out.println("Welcome to Flappy Deal Or No Deal\n");
+        setPlayerName();
+        System.out.println("Hello " + playerName + "!");
         bsi.generateBoxArray();
 
         int input = inputInteger("To choose your box, input a box I.D (1 -> 22):");
@@ -24,7 +29,7 @@ public class GameRunner {
             bankerWankerOffer();
         }
 
-        finalRound();
+        finalRound();  // "Endre boks? Eller nei?"
 
         closeScanner();
     }
@@ -34,7 +39,9 @@ public class GameRunner {
         for(int i = 0; i<picks; i++){
             bsi.printAllBoxIDsLeft();
             bsi.printAllAmountsLeft();
-            bsi.openBox(inputInteger("Input a box I.D:"));
+            int input = inputInteger("Input a box I.D:");
+            bsi.openBox(input);
+            System.out.println("You selected box no. " + input);
         }
         roundsPlayed++;
     }
@@ -52,7 +59,7 @@ public class GameRunner {
         offer /= numOfBoxes;
 
         offer *= kValue;
-        offerHistory.add(offer);
+        //offerHistory.add(offer);
 
         if(dealtAmount == 0){
 
@@ -112,6 +119,20 @@ public class GameRunner {
     }
 
 
+    public void setPlayerName(){
+        System.out.println("Please input your player name");
+        System.out.println("Be sure to only include letters and numbers:");
+        while(true){
+            playerName = sc.nextLine();
+            if(playerName.matches("^[\\p{L}0-9']+$")){
+                break;
+            }
+            else{
+                System.out.println("Name was invalid, please try again:");
+            }
+        }
+    }
+
     public int inputInteger(String msg){
         int input = 0;
         while(true){
@@ -121,7 +142,6 @@ public class GameRunner {
 
                 for(int i = 0; i < bsi.getBoxArray().size(); i++){
                     if(bsi.getBoxArray().get(i).getBoxID()  ==  input  &&  bsi.getBoxArray().get(i).getBoxID()  !=  bsi.getUserBox().getBoxID()){
-                        System.out.println("You selected box no. " + input);
                         return input;
                     }
                 }
