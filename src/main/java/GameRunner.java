@@ -15,7 +15,6 @@ public class GameRunner {
 
     public void run(){
         highScoresMap = fio.readHighScoreFileToMap();
-        System.out.println(highScoresMap);
 
 
         System.out.println("Welcome to Flappy Deal Or No Deal\n");
