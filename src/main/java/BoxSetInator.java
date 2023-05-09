@@ -50,9 +50,9 @@ public class BoxSetInator {
     public void openBox(int input){
         // Brukeren velger boxID-en, åpner boksen, sletter den fra boxArray og amountsArray
         Box box = new Box(0, 0);
-        for(int i = 0; i < boxArray.size(); i++){
-            if(boxArray.get(i).getBoxID() == input){
-                box = boxArray.get(i);
+        for (Box b : boxArray) {
+            if (b.getBoxID() == input) {
+                box = b;
                 break;
             }
         }
@@ -64,10 +64,10 @@ public class BoxSetInator {
     public void printAllBoxIDsLeft(){
         System.out.println("\nYour box: " + userBox.getBoxID());
         System.out.println("\nIDs of boxes remaining:");
-        String output = "";
+        StringBuilder output = new StringBuilder();
         for(Box b : boxArray){
             if(b.getBoxID()!=userBox.getBoxID()){
-                output += b.getBoxID() + " ";
+                output.append(b.getBoxID()).append(" ");
             }
         }
         System.out.println(output);
@@ -75,14 +75,14 @@ public class BoxSetInator {
 
     public void printAllAmountsLeft(){
         System.out.println("\nPrize amounts remaining:");
-        String output = "";
-        Boolean lineDowned = false;
-        for(int i = 0; i<cashAmountsRemaining.size(); i++){
-            if(!lineDowned && cashAmountsRemaining.get(i) > 750){
-                output += "\n";
+        StringBuilder output = new StringBuilder();
+        boolean lineDowned = false;
+        for (Float value : cashAmountsRemaining) {
+            if (!lineDowned && value > 750) {
+                output.append("\n");
                 lineDowned = true;
             }
-            output += "£" + df.format(cashAmountsRemaining.get(i)) + " ";
+            output.append("£").append(df.format(value)).append(" ");
         }
         System.out.println(output+"\n");
     }
