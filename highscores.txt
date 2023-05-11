@@ -1,0 +1,11 @@
+# playerName,value
+FlapjackRL,100000.0
+player1,50000.0
+edd,29249.186
+player2,25000.0
+player,20197.617
+d,17212.611
+player4,11763.046
+mmmm,8654.156
+flappy,6667.854
+ji,6104.2

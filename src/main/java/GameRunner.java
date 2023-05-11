@@ -35,8 +35,10 @@ public class GameRunner {
         }
 
         finalRound();  // "Endre boks? Eller nei?"
+
         addNewScoreToMap();
         fio.writeMapToHighScoreFile(highScoresMap);
+        printHighScores();
 
         closeScanner();
     }
@@ -130,10 +132,10 @@ public class GameRunner {
 
     public void setPlayerName(){
         System.out.println("Please input your player name");
-        System.out.println("Be sure to only include letters and numbers:");
+        System.out.println("Be sure to only include letters and numbers, and be less than 14 characters:");
         while(true){
             playerName = sc.nextLine();
-            if(playerName.matches("^[\\p{L}0-9']+$")){
+            if(playerName.matches("^[\\p{L}0-9']+$") && playerName.length()<14){
                 break;
             }
             else{
@@ -143,32 +145,50 @@ public class GameRunner {
     }
 
     public void printHighScores(){
-
+        System.out.printf("\n\t----- High Scores -----\n");
+        String[] players = highScoresMap.keySet().toArray(new String[0]);
+        for(int i = 0; i<highScoresMap.size(); i++){
+            System.out.printf("%-14s %16s\n", players[i], bsi.poundsValueStringInator(highScoresMap.get(players[i])));
+        }
     }
 
     public void addNewScoreToMap(){
+        // Se hvis finns det noen høyscore på ledertavlen med players navn
+        if(!highScoresMap.containsKey(playerName)){
+            if(highScoresMap.size() == 10){  // Tall sier hvor mange resultater kan ligge på ledertavlen
+                Set<Map.Entry<String, Float>> entries = highScoresMap.entrySet();
+                Iterator<Map.Entry<String, Float>> iterator = entries.iterator();
+                Map.Entry<String, Float> entry, last = null;
 
-        if(highScoresMap.size() == 10){
-            Set<Map.Entry<String, Float>> entries = highScoresMap.entrySet();
-            Iterator<Map.Entry<String, Float>> iterator = entries.iterator();
-            Map.Entry<String, Float> entry, last = null;
+                while(iterator.hasNext()){
+                    entry = iterator.next();
+                    last = entry;
+                }
+                if(amountWon > last.getValue()){
+                    System.out.println("Congrats " + playerName + " , you made the leaderboard!");
+                    highScoresMap.remove(last.getKey());
+                    highScoresMap.put(playerName, amountWon);
+                }
+                else{
+                    System.out.println("You didn't make it onto the leaderboard");
+                }
 
-            while(iterator.hasNext()){
-                entry = iterator.next();
-                last = entry;
-            }
-            if(amountWon > last.getValue()){
-                System.out.println("Congrats " + playerName + " , you made the leaderboard!");
-                highScoresMap.remove(last.getKey());
-                highScoresMap.put(playerName, amountWon);
             }
             else{
-                System.out.println("You didn't make it onto the leaderboard");
+                System.out.println("You made the leaderboard, but there was space free anyway...");
+                highScoresMap.put(playerName, amountWon);
             }
+
         }
         else{
-            System.out.println("You made the leaderboard, but there was space free anyway...");
-            highScoresMap.put(playerName, amountWon);
+            // Endre poengsum hvis spilleren har slått sin høyscore
+            if(amountWon > highScoresMap.get(playerName) ){
+                System.out.println("You beat your high score!");
+                highScoresMap.replace(playerName, amountWon);
+            }
+            else{
+                System.out.println("You have a score on the leaderboard, but you didn't beat it.");
+            }
         }
         highScoresMap = sortHighScoreMap();
     }
@@ -181,11 +201,11 @@ public class GameRunner {
     }
 
 
-    public int inputInteger(String msg){
+    public int inputInteger(String promptMsg){
         int input = 0;
         while(true){
             try{
-                System.out.println(msg);
+                System.out.println(promptMsg);
                 input = Integer.parseInt(sc.nextLine());
 
                 for(int i = 0; i < bsi.getBoxArray().size(); i++){
